@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebasesocialmediaapp/Components/My_Button.dart';
 import 'package:firebasesocialmediaapp/Components/My_TextField.dart';
@@ -33,11 +34,22 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+
+      // create initial user details and save it inside user credentials
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailcontroller.text,
           password: passwordcontroller.text
       );
-      Navigator.pop(context);
+      // create a new documents inside user credentials
+      FirebaseFirestore.instance.collection('Users')
+          .doc(userCredential.user!.email).set({
+        'username': emailcontroller.text.split('@')[0], // initial username
+        'bio': 'Empty bio' // initail bio
+
+        // add any field
+      })
+      ;
+      if (context.mounted)Navigator.pop(context);
 
     } on FirebaseAuthException catch (e){
       Navigator.pop(context);

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebasesocialmediaapp/Components/Drawer.dart';
 import 'package:firebasesocialmediaapp/Components/wall_post.dart';
+import 'package:firebasesocialmediaapp/Pages/Profile_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,22 +34,21 @@ class _HomePageState extends State<HomePage> {
     });
 
   }
+  void goToProfilePage(){
+    // pop the drawer
+    Navigator.pop(context);
+    // goto profilepage
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
         backgroundColor: Colors.grey[900],
-        actions: [
-
-          GestureDetector(
-            onTap: signOut,
-              child: Icon(Icons.logout)
-          )
-        ],
         title: Center(child: Text('The Wall')),
       ),
-      drawer: MyDrawer(),
+      drawer: MyDrawer(onProfile: goToProfilePage, onSignOut: signOut,),
       body: Padding(
         padding: const EdgeInsets.all(5.0),
         child: Column(
