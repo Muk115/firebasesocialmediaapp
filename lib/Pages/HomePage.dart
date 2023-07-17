@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebasesocialmediaapp/Components/Drawer.dart';
 import 'package:firebasesocialmediaapp/Components/wall_post.dart';
 import 'package:firebasesocialmediaapp/Pages/Profile_page.dart';
+import 'package:firebasesocialmediaapp/helper_method/helper.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -43,9 +44,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Colors.grey[900],
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         title: Center(child: Text('The Wall')),
       ),
       drawer: MyDrawer(onProfile: goToProfilePage, onSignOut: signOut,),
@@ -63,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index){
                     final post = snapshots.data!.docs[index];
                     return WallPost(message: post['Message'],
-                        user: post['UserEmail'], postId: post.id, likes: List<String>.from(post['likes']??[]),
+                        user: post['UserEmail'], postId: post.id, likes: List<String>.from(post['likes']??[]), time: formattedDate(post['TimeStamp']),
                     );
 
                   });
@@ -85,12 +86,14 @@ class _HomePageState extends State<HomePage> {
                     border: OutlineInputBorder(
 
                       borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Theme.of(context).colorScheme.primary)
 
 
                     ),
                     hintText: 'Write something on the wall',
+                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
                     filled: true,
-                    fillColor: Colors.white
+                    fillColor: Theme.of(context).colorScheme.background
 
                   ),
 

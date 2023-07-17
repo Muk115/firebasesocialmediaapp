@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebasesocialmediaapp/auth/Login_Or_Register.dart';
+import 'package:firebasesocialmediaapp/themes/dark_theme.dart';
+import 'package:firebasesocialmediaapp/themes/light_theme.dart';
 import 'package:flutter/material.dart';
 
 import 'Pages/Login_Page.dart';
@@ -21,8 +23,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: authPage(),
+    return  MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: lightTheme,
+      darkTheme: darkTheme ,
+      home: const authPage(),
     );
   }
 }

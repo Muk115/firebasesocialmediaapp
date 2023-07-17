@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebasesocialmediaapp/Components/Comments.dart';
+import 'package:firebasesocialmediaapp/Components/delete_Button.dart';
 import 'package:flutter/material.dart';
 
 import '../helper_method/helper.dart';
@@ -11,8 +12,9 @@ class WallPost extends StatefulWidget {
   final String user;
   final String postId;
   final List<String> likes;
+  final String time;
 
-  const WallPost({Key? key, required this.message, required this.user, required this.postId, required this.likes,}) : super(key: key);
+  const WallPost({Key? key, required this.message, required this.user, required this.postId, required this.likes, required this.time,}) : super(key: key);
 
   @override
   State<WallPost> createState() => _WallPostState();
@@ -73,7 +75,7 @@ class _WallPostState extends State<WallPost> {
         actions: [
           // cancel
           TextButton(onPressed: ()=>Navigator.pop(context),
-              child: Text('Cancel')),
+              child: Text('Cancel', )),
           // save
           TextButton(onPressed: (){
             addComment(commentController.text);
@@ -88,31 +90,95 @@ class _WallPostState extends State<WallPost> {
       );
     });
   }
+  // delete post
+
+  void deletePost (){
+    // show a dalog box asking for permission
+    showDialog(context: context, builder: (context){
+      return AlertDialog(
+        title: Text('Delete post'),
+        content: const Text('Are you sure'),
+        actions: [
+          TextButton(onPressed:()=> Navigator.pop(context), 
+              child: Text('Cancel')),
+          TextButton(onPressed: () async{
+            // delete comments from the firebase doc
+            final commentDoc = await FirebaseFirestore.
+            instance.
+            collection('User posts')
+                .doc(widget.postId).
+            collection('Comments').
+            get();
+
+            for (var doc in commentDoc.docs){
+              await FirebaseFirestore.instance.
+              collection('User posts')
+                  .doc(widget.postId).
+              collection('Comments').
+              doc(doc.id).delete();
+            }
+
+            // delete the post from the wall
+            FirebaseFirestore.instance.collection('User posts').doc(widget.postId).delete().
+            then((value) => print('Post deleted')).
+            catchError((error)=> print('Failed to delete post: $error')) ;
+
+            // dismiss dialog box
+            Navigator.pop(context);
+
+          }, child: const Text('Delete'))
+        ],
+      );
+      
+
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
       // container design
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: Theme.of(context).colorScheme.primary,
         borderRadius: BorderRadius.circular(8)
       ),
       margin: const EdgeInsets.only(top: 25,left: 25,right: 25),
       padding: const EdgeInsets.all(25),
       child: Column(
         children: [
-          const SizedBox(width: 20,),
+          // wall post
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 10,),
               // display message
-              Text(widget.message),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(widget.message),
+                  if (widget.user == currentUser.email)
+                    DeleteButton(onTap: deletePost,)
+                ],
+              ),
               const SizedBox(height: 5,),
               // display user email
-              Text(widget.user, style: TextStyle(
-                color: Colors.grey[500]
-              ),),
+              Row(
+                children: [
+                  Text(widget.user, style: TextStyle(
+                    color: Colors.grey[500]
+                  ),),
+                  Text('.'),
+                  Text(widget.time,  style: TextStyle(
+                      color: Colors.grey[500]
+                  ),),
+
+                  // delete post icon
+
+
+                ],
+              ),
               const SizedBox(height: 20,),
+
+              // buttons
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

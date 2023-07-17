@@ -10,9 +10,9 @@ class Comments extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 5),
-      padding: EdgeInsets.all(15),
+      padding: EdgeInsets.all(9),
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(4)
       ),
       child: Column(
